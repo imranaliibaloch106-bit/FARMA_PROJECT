@@ -1,0 +1,419 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - SmartFarm Pro{% endblock %}
+
+{% block content %}
+<style>
+    .blog-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .blog-header {
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .blog-header h1 {
+        margin-bottom: 1rem;
+    }
+    
+    .blog-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 3rem;
+        margin-bottom: 3rem;
+    }
+    
+    .blog-posts {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .blog-post {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+    }
+    
+    .blog-post:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
+    }
+    
+    .blog-post-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .blog-category {
+        background: #e8f5e8;
+        color: #2d4a2d;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+    
+    .blog-post-header h2 {
+        color: #2d4a2d;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+    }
+    
+    .blog-meta {
+        display: flex;
+        gap: 1.5rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .blog-meta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .blog-post-content {
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 1.5rem;
+    }
+    
+    .blog-post-actions {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid #e8f5e8;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: #4caf50;
+        border: 2px solid #4caf50;
+    }
+    
+    .btn-danger {
+        background: #f44336;
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline:hover {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .empty-blog {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #666;
+        background: white;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+    }
+    
+    .empty-blog i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #4caf50;
+    }
+    
+    .blog-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .sidebar-widget {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+    }
+    
+    .sidebar-widget h3 {
+        color: #2d4a2d;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e8f5e8;
+    }
+    
+    .category-list {
+        list-style: none;
+    }
+    
+    .category-list li {
+        margin-bottom: 0.8rem;
+    }
+    
+    .category-list a {
+        display: flex;
+        justify-content: space-between;
+        color: #555;
+        text-decoration: none;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .category-list a:hover {
+        background: #f8fff8;
+        color: #4caf50;
+        padding-left: 1rem;
+    }
+    
+    .category-list span {
+        background: #e8f5e8;
+        color: #2d4a2d;
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .popular-posts {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .popular-post {
+        padding: 1rem;
+        background: #f8fff8;
+        border-radius: 8px;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+    }
+    
+    .popular-post:hover {
+        background: #e8f5e8;
+        transform: translateX(5px);
+    }
+    
+    .popular-post h4 {
+        color: #2d4a2d;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .popular-post span {
+        color: #666;
+        font-size: 0.8rem;
+    }
+    
+    .subscribe-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .subscribe-form input {
+        padding: 10px;
+        border: 2px solid #e8f5e8;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: #f8fff8;
+    }
+    
+    .subscribe-form input:focus {
+        outline: none;
+        border-color: #4caf50;
+        background: white;
+    }
+    
+    .btn-primary {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .btn-block {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+        .blog-layout {
+            grid-template-columns: 1fr;
+        }
+        
+        .blog-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
+<div class="blog-container">
+    <!-- Admin Actions -->
+    {% if session.role == 'admin' %}
+    <div style="margin-bottom: 2rem; display: flex; gap: 1rem; align-items: center;">
+        <a href="/add_blog" class="btn btn-primary">
+            ✏️ Add New Blog Post
+        </a>
+        <span style="color: #666; font-size: 0.9rem;">Logged in as Admin</span>
+    </div>
+    {% endif %}
+
+    <!-- Blog Header -->
+    <section class="blog-header">
+        <h1>📝 SmartFarm Blog</h1>
+        <p>Latest insights, tips, and news from the world of modern agriculture</p>
+    </section>
+
+    <!-- Blog Content -->
+    <section class="blog-main">
+        <div class="blog-layout">
+            <!-- Main Blog Posts -->
+            <div class="blog-posts">
+                {% for blog in blogs %}
+                <article class="blog-post" id="blog-post-{{ blog.id }}">
+                    <div class="blog-post-header">
+                        <span class="blog-category">{{ blog.category }}</span>
+                        <h2>{{ blog.title }}</h2>
+                        <div class="blog-meta">
+                            <span>👤 {{ blog.author }}</span>
+                            <span>📅 {{ blog.created_at[:10] }}</span>
+                        </div>
+                    </div>
+                    <div class="blog-post-content">
+                        <p>{{ blog.content }}</p>
+                    </div>
+                    <div class="blog-post-actions">
+                       <button class="btn btn-outline btn-sm share-button" data-blog-id="{{ blog.id }}">
+                       📤 Share
+                       </button>
+                        {% if session.role == 'admin' %}
+                        <form method="POST" action="/delete_blog/{{ blog.id }}" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" 
+                                    onclick="return confirm('Are you sure you want to delete this blog post?')">
+                                🗑️ Delete
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </article>
+                {% endfor %}
+                
+                {% if not blogs %}
+                <div class="empty-blog">
+                    <div>📰</div>
+                    <h3>No Blog Posts Yet</h3>
+                    <p>Check back later for updates and farming insights.</p>
+                    {% if session.role == 'admin' %}
+                    <a href="/add_blog" class="btn btn-outline" style="margin-top: 1rem;">
+                        ✏️ Write First Post
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Blog Sidebar -->
+            <aside class="blog-sidebar">
+                <div class="sidebar-widget">
+                    <h3>📂 Categories</h3>
+                    <ul class="category-list">
+                        <li><a href="#">Farming Tips <span>12</span></a></li>
+                        <li><a href="#">Technology <span>8</span></a></li>
+                        <li><a href="#">Sustainability <span>15</span></a></li>
+                        <li><a href="#">Market News <span>6</span></a></li>
+                        <li><a href="#">Success Stories <span>9</span></a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-widget">
+                    <h3>🔥 Popular Posts</h3>
+                    <div class="popular-posts">
+                        <div class="popular-post">
+                            <h4>5 Ways to Increase Crop Yield</h4>
+                            <span>March 15, 2025</span>
+                        </div>
+                        <div class="popular-post">
+                            <h4>Smart Irrigation Systems</h4>
+                            <span>February 28, 2025</span>
+                        </div>
+                        <div class="popular-post">
+                            <h4>Organic Farming Benefits</h4>
+                            <span>January 12, 2025</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-widget">
+                    <h3>📧 Subscribe</h3>
+                    <p>Get the latest farming insights delivered to your inbox.</p>
+                    <form class="subscribe-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn btn-primary btn-block">Subscribe</button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </section>
+</div>
+
+<script>
+function shareBlog(blogId) {
+    if (navigator.share) {
+        navigator.share({
+            title: document.title,
+            text: 'Check out this blog post from SmartFarm!',
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Blog link copied to clipboard!');
+        });
+    }
+}
+
+// Handle share buttons
+document.querySelectorAll('.share-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const blogId = this.getAttribute('data-blog-id');
+        shareBlog(blogId);
+    });
+});
+
+// Handle subscribe form
+document.querySelector('.subscribe-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = this.querySelector('input').value;
+    alert(`Thank you for subscribing with: ${email}\nYou'll receive our latest updates soon!`);
+    this.reset();
+});
+</script>
+{% endblock %}

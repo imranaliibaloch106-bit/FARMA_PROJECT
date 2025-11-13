@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SmartFarm{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .dashboard-header h1 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
+    }
+    
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #4caf50;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2d4a2d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .quick-actions {
+        background: white;
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+    }
+    
+    .section-title {
+        color: #2d4a2d;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .action-btn {
+        background: #f8fff8;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-decoration: none;
+        color: #2d4a2d;
+        text-align: center;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .action-btn:hover {
+        background: #4caf50;
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    .action-btn i {
+        font-size: 1.5rem;
+    }
+    
+    .recent-crops {
+        background: white;
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+    }
+    
+    .crops-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .crop-card {
+        background: #f8fff8;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+    }
+    
+    .crop-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+    }
+    
+    .crop-header {
+        display: flex;
+        justify-content: between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+    
+    .crop-name {
+        font-weight: bold;
+        color: #2d4a2d;
+        font-size: 1.1rem;
+    }
+    
+    .crop-status {
+        background: #e8f5e8;
+        color: #2d4a2d;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .crop-details {
+        display: grid;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .crop-detail {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+    }
+    
+    .crop-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-edit {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .btn-delete {
+        background: #f44336;
+        color: white;
+    }
+    
+    .btn-sm:hover {
+        transform: translateY(-2px);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #4caf50;
+    }
+</style>
+
+<!-- Dashboard Header -->
+<div class="dashboard-header">
+    <h1>📊 Farmer Dashboard</h1>
+    <p>Welcome back, <strong>{{ username }}</strong>! Here's your farm overview.</p>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">🌱</div>
+        <div class="stat-number">{{ total_crops }}</div>
+        <div class="stat-label">Total Crops</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">📍</div>
+        <div class="stat-number">{{ "%.1f"|format(total_area) }}</div>
+        <div class="stat-label">Total Area (acres)</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">⚖️</div>
+        <div class="stat-number">{{ "%.0f"|format(total_yield) }}</div>
+        <div class="stat-label">Expected Yield (kg)</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-number">
+            {% set total_value = 0 %}
+            {% for crop in crops %}
+                {% set total_value = total_value + (crop.expected_yield|float * crop.price|float) %}
+            {% endfor %}
+            ${{ "%.0f"|format(total_value) }}
+        </div>
+        <div class="stat-label">Estimated Value</div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <h2 class="section-title">🚀 Quick Actions</h2>
+    <div class="actions-grid">
+        <a href="/add_crop" class="action-btn">
+            ➕ Add New Crop
+        </a>
+        <a href="/view_crops" class="action-btn">
+            👀 View All Crops
+        </a>
+        <a href="/farm_map" class="action-btn">
+            🗺️ Farm Map
+        </a>
+        {% if role == 'admin' %}
+        <a href="/admin" class="action-btn">
+            👑 Admin Panel
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recent Crops -->
+<div class="recent-crops">
+    <h2 class="section-title">📈 Recent Crops</h2>
+    
+    {% if crops %}
+    <div class="crops-grid">
+        {% for crop in crops[-4:] %}
+        <div class="crop-card">
+            <div class="crop-header">
+                <div class="crop-name">{{ crop.crop_name }}</div>
+                <span class="crop-status">{{ crop.status }}</span>
+            </div>
+            <div class="crop-details">
+                <div class="crop-detail">🌾 {{ crop.crop_type }}</div>
+                <div class="crop-detail">📍 {{ crop.area }} acres</div>
+                <div class="crop-detail">🌤️ {{ crop.season }}</div>
+                <div class="crop-detail">⚖️ {{ crop.expected_yield }} kg</div>
+            </div>
+            <div class="crop-actions">
+                <a href="/edit_crop/{{ crop.id }}" class="btn-sm btn-edit">Edit</a>
+                <a href="/delete_crop/{{ crop.id }}" class="btn-sm btn-delete" 
+                   onclick="return confirm('Delete {{ crop.crop_name }}?')">Delete</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div>🌱</div>
+        <h3>No Crops Added Yet</h3>
+        <p>Start by adding your first crop to see it here.</p>
+        <a href="/add_crop" class="btn-sm btn-edit" style="display: inline-block; margin-top: 1rem;">
+            ➕ Add Your First Crop
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

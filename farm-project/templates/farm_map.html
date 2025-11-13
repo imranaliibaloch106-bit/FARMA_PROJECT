@@ -1,0 +1,741 @@
+{% extends "base.html" %}
+
+{% block title %}Farm Map - SmartFarm{% endblock %}
+
+{% block content %}
+<style>
+    .map-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .map-header {
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .map-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        animation: float 20s linear infinite;
+    }
+    
+    @keyframes float {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        100% { transform: translate(-20px, -20px) rotate(360deg); }
+    }
+    
+    .map-header h1 {
+        margin-bottom: 0.5rem;
+        font-size: 2.8rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .map-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        font-weight: 300;
+    }
+    
+    .interactive-map {
+        background: linear-gradient(145deg, #ffffff, #f8fff8);
+        padding: 2.5rem;
+        border-radius: 20px;
+        border: 2px solid #e8f5e8;
+        margin-bottom: 3rem;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.1);
+        position: relative;
+    }
+    
+    .map-controls {
+        margin-bottom: 2.5rem;
+    }
+    
+    .map-controls h3 {
+        color: #2d4a2d;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        border-left: 4px solid #4caf50;
+        padding-left: 1rem;
+    }
+    
+    .map-legend {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 1rem;
+        background: linear-gradient(135deg, #f8fff8, #ffffff);
+        border-radius: 12px;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.08);
+    }
+    
+    .legend-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.15);
+        border-color: #4caf50;
+    }
+    
+    .legend-color {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .legend-color.wheat { 
+        background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+    }
+    .legend-color.rice { 
+        background: linear-gradient(135deg, #a5d6a7, #81c784);
+    }
+    .legend-color.corn { 
+        background: linear-gradient(135deg, #ffe082, #ffd54f);
+    }
+    .legend-color.vegetable { 
+        background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+    }
+    
+    .map-visualization {
+        background: linear-gradient(135deg, #e8f5e8, #d4edda);
+        padding: 2.5rem;
+        border-radius: 15px;
+        min-height: 550px;
+        position: relative;
+        border: 2px solid #c8e6c9;
+        box-shadow: inset 0 4px 15px rgba(76, 175, 80, 0.1);
+    }
+    
+    .farm-map {
+        width: 100%;
+        height: 450px;
+        background: linear-gradient(135deg, #a5d6a7, #81c784);
+        border: 4px solid #2d4a2d;
+        border-radius: 15px;
+        position: relative;
+        margin: 0 auto;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .farm-map::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 2px, transparent 2px),
+            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 30px 30px, 20px 20px;
+    }
+    
+    .field {
+        position: absolute;
+        border: 3px solid rgba(255,255,255,0.8);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        font-size: 1.1rem;
+    }
+    
+    .field:hover {
+        transform: scale(1.08);
+        z-index: 10;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    
+    .wheat-field {
+        background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+        top: 40px;
+        left: 40px;
+        width: 220px;
+        height: 160px;
+        color: #856404;
+    }
+    
+    .rice-field {
+        background: linear-gradient(135deg, #a5d6a7, #81c784);
+        top: 40px;
+        right: 40px;
+        width: 200px;
+        height: 140px;
+        color: #2d4a2d;
+    }
+    
+    .corn-field {
+        background: linear-gradient(135deg, #ffe082, #ffd54f);
+        bottom: 40px;
+        left: 40px;
+        width: 240px;
+        height: 150px;
+        color: #856404;
+    }
+    
+    .vegetable-field {
+        background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+        bottom: 40px;
+        right: 40px;
+        width: 170px;
+        height: 200px;
+        color: #2d4a2d;
+    }
+    
+    .field-info {
+        background: rgba(255,255,255,0.95);
+        padding: 1.2rem;
+        border-radius: 12px;
+        text-align: center;
+        color: #2d4a2d;
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 180px;
+        z-index: 20;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border: 2px solid #e8f5e8;
+        backdrop-filter: blur(10px);
+    }
+    
+    .field:hover .field-info {
+        display: block;
+        animation: fadeInUp 0.3s ease;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+    
+    .field-info h4 {
+        margin-bottom: 0.5rem;
+        color: #2d4a2d;
+        font-weight: 600;
+    }
+    
+    .farm-house {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #ff8a65, #ff7043);
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        border: 4px solid #fff;
+        box-shadow: 0 6px 20px rgba(255, 138, 101, 0.4);
+        z-index: 5;
+    }
+    
+    .water-source {
+        position: absolute;
+        top: 30%;
+        left: 30%;
+        background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        border: 4px solid #fff;
+        box-shadow: 0 6px 20px rgba(79, 195, 247, 0.4);
+        z-index: 5;
+    }
+    
+    .field-stats {
+        background: linear-gradient(145deg, #ffffff, #f8fff8);
+        padding: 2.5rem;
+        border-radius: 20px;
+        border: 2px solid #e8f5e8;
+        margin-bottom: 3rem;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.1);
+    }
+    
+    .field-stats h2 {
+        text-align: center;
+        color: #2d4a2d;
+        margin-bottom: 2.5rem;
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+    }
+    
+    .field-stats h2::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        border-radius: 2px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2.5rem;
+    }
+    
+    .field-stat-card {
+        background: linear-gradient(135deg, #f8fff8, #ffffff);
+        padding: 2rem;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .field-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+    }
+    
+    .field-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(76, 175, 80, 0.15);
+        border-color: #4caf50;
+    }
+    
+    .field-stat-card h3 {
+        color: #2d4a2d;
+        margin-bottom: 1.5rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #4caf50;
+        margin-bottom: 1.5rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    .stat-number small {
+        font-size: 1.1rem;
+        color: #666;
+        font-weight: 400;
+    }
+    
+    .progress-bar {
+        background: #e8f5e8;
+        height: 12px;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .progress-fill {
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        height: 100%;
+        transition: width 1.5s ease-in-out;
+        border-radius: 6px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
+    .crop-rotation {
+        background: linear-gradient(145deg, #ffffff, #f8fff8);
+        padding: 2.5rem;
+        border-radius: 20px;
+        border: 2px solid #e8f5e8;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.1);
+    }
+    
+    .crop-rotation h2 {
+        text-align: center;
+        color: #2d4a2d;
+        margin-bottom: 2.5rem;
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+    }
+    
+    .crop-rotation h2::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        border-radius: 2px;
+    }
+    
+    .rotation-timeline {
+        margin-top: 2.5rem;
+        position: relative;
+    }
+    
+    .rotation-timeline::before {
+        content: '';
+        position: absolute;
+        left: 120px;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(to bottom, #4caf50, #2d4a2d);
+        border-radius: 2px;
+    }
+    
+    .timeline-item {
+        display: flex;
+        gap: 2.5rem;
+        margin-bottom: 2.5rem;
+        position: relative;
+        align-items: center;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 116px;
+        width: 16px;
+        height: 16px;
+        background: #4caf50;
+        border: 4px solid white;
+        border-radius: 50%;
+        z-index: 2;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+    }
+    
+    .timeline-date {
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 30px;
+        font-weight: 700;
+        min-width: 120px;
+        text-align: center;
+        z-index: 2;
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+        font-size: 1.1rem;
+    }
+    
+    .timeline-content {
+        background: linear-gradient(135deg, #f8fff8, #ffffff);
+        padding: 2rem;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+        flex: 1;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.08);
+    }
+    
+    .timeline-content:hover {
+        transform: translateX(10px);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.15);
+        border-color: #4caf50;
+    }
+    
+    .timeline-content h4 {
+        color: #2d4a2d;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+    
+    .timeline-content p {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .farm-map {
+            height: 350px;
+        }
+        
+        .field {
+            font-size: 0.9rem;
+        }
+        
+        .rotation-timeline::before {
+            left: 90px;
+        }
+        
+        .timeline-item::before {
+            left: 86px;
+        }
+        
+        .timeline-date {
+            min-width: 100px;
+            font-size: 1rem;
+            padding: 0.8rem 1.2rem;
+        }
+        
+        .map-header h1 {
+            font-size: 2.2rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="map-container">
+    <!-- Map Header -->
+    <section class="map-header">
+        <h1>🗺️ Farm Map & Layout</h1>
+        <p>Visualize your farm layout and crop distribution</p>
+    </section>
+
+    <!-- Interactive Map -->
+    <section class="interactive-map">
+        <div class="map-controls">
+            <h3>Farm Layout Overview</h3>
+            <div class="map-legend">
+                <div class="legend-item">
+                    <span class="legend-color wheat"></span>
+                    <span>Wheat Fields</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color rice"></span>
+                    <span>Rice Fields</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color corn"></span>
+                    <span>Corn Fields</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color vegetable"></span>
+                    <span>Vegetable Gardens</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="map-visualization">
+            <!-- Simplified Farm Map -->
+            <div class="farm-map">
+                <div class="field wheat-field" data-crop="Wheat">
+                    🌾 Wheat Field
+                    <div class="field-info">
+                        <h4>North Wheat Field</h4>
+                        <p>5.2 acres</p>
+                        <p>Planted: March 2025</p>
+                    </div>
+                </div>
+                
+                <div class="field rice-field" data-crop="Rice">
+                    🌾 Rice Field
+                    <div class="field-info">
+                        <h4>East Rice Field</h4>
+                        <p>3.8 acres</p>
+                        <p>Planted: April 2025</p>
+                    </div>
+                </div>
+                
+                <div class="field corn-field" data-crop="Corn">
+                    🌽 Corn Field
+                    <div class="field-info">
+                        <h4>South Corn Field</h4>
+                        <p>4.5 acres</p>
+                        <p>Planted: May 2025</p>
+                    </div>
+                </div>
+                
+                <div class="field vegetable-field" data-crop="Vegetables">
+                    🥦 Vegetable Garden
+                    <div class="field-info">
+                        <h4>West Vegetable Garden</h4>
+                        <p>2.1 acres</p>
+                        <p>Mixed vegetables</p>
+                    </div>
+                </div>
+                
+                <div class="farm-house">
+                    🏠
+                    <span style="font-size: 0.7rem;">Farm House</span>
+                </div>
+                
+                <div class="water-source">
+                    💧
+                    <span style="font-size: 0.7rem;">Water Well</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Field Statistics -->
+    <section class="field-stats">
+        <h2>Field Statistics</h2>
+        <div class="stats-grid">
+            <div class="field-stat-card">
+                <h3>Total Farm Area</h3>
+                <div class="stat-number">15.6 <small>acres</small></div>
+                <div class="stat-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="field-stat-card">
+                <h3>Wheat Fields</h3>
+                <div class="stat-number">5.2 <small>acres</small></div>
+                <div class="stat-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 33%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="field-stat-card">
+                <h3>Rice Fields</h3>
+                <div class="stat-number">3.8 <small>acres</small></div>
+                <div class="stat-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 24%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="field-stat-card">
+                <h3>Corn Fields</h3>
+                <div class="stat-number">4.5 <small>acres</small></div>
+                <div class="stat-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 29%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Crop Rotation Plan -->
+    <section class="crop-rotation">
+        <h2>Crop Rotation Schedule</h2>
+        <div class="rotation-timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">Spring 2025</div>
+                <div class="timeline-content">
+                    <h4>North Field - Wheat</h4>
+                    <p>Planted: March 15, 2025</p>
+                    <p>Expected Harvest: July 2025</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Summer 2025</div>
+                <div class="timeline-content">
+                    <h4>East Field - Rice</h4>
+                    <p>Planted: April 10, 2025</p>
+                    <p>Expected Harvest: August 2025</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Fall 2025</div>
+                <div class="timeline-content">
+                    <h4>South Field - Corn</h4>
+                    <p>Planned: August 2025</p>
+                    <p>Expected Harvest: November 2025</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Winter 2025</div>
+                <div class="timeline-content">
+                    <h4>West Field - Vegetables</h4>
+                    <p>Year-round cultivation</p>
+                    <p>Mixed seasonal vegetables</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+// Add interactivity to farm map
+document.addEventListener('DOMContentLoaded', function() {
+    const fields = document.querySelectorAll('.field');
+    
+    fields.forEach(field => {
+        field.addEventListener('click', function() {
+            const cropType = this.getAttribute('data-crop');
+            alert(`You clicked on ${cropType} field!\nThis would show detailed field information.`);
+        });
+    });
+});
+</script>
+{% endblock %}

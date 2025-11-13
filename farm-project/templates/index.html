@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}Home - SmartFarm{% endblock %}
+
+{% block content %}
+<style>
+    .hero {
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        color: white;
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+    
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hero p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background: white;
+        color: #4caf50;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: bold;
+        margin: 0 10px;
+        transition: all 0.3s ease;
+        border: 2px solid white;
+    }
+    
+    .btn:hover {
+        background: transparent;
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+    
+    .btn-outline:hover {
+        background: white;
+        color: #4caf50;
+    }
+    
+    .features {
+        padding: 4rem 2rem;
+        background: white;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        color: #2d4a2d;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .feature-card {
+        background: #f8fff8;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #4caf50;
+    }
+    
+    .feature-card h3 {
+        color: #2d4a2d;
+        margin-bottom: 1rem;
+    }
+    
+    .stats {
+        background: #2d4a2d;
+        color: white;
+        padding: 3rem 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #a5d6a7;
+        margin-bottom: 0.5rem;
+    }
+    
+    .latest-blogs {
+        padding: 4rem 2rem;
+        background: #f8fff8;
+    }
+    
+    .blogs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .blog-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+    }
+    
+    .blog-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+    }
+    
+    .blog-category {
+        background: #e8f5e8;
+        color: #2d4a2d;
+        padding: 0.3rem 1rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+    
+    .blog-title {
+        color: #2d4a2d;
+        margin-bottom: 1rem;
+    }
+    
+    .blog-meta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .cta {
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        color: white;
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+    
+    .cta h2 {
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2rem;
+        }
+        
+        .btn {
+            display: block;
+            margin: 10px auto;
+            max-width: 200px;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to SmartFarm  🌾</h1>
+        <p>Modern farm management system for efficient and sustainable agriculture</p>
+        <div>
+            {% if not session.user_id %}
+                <a href="/register" class="btn">Get Started</a>
+                <a href="/login" class="btn btn-outline">Login</a>
+            {% else %}
+                <a href="/dashboard" class="btn">Go to Dashboard</a>
+                <a href="/add_crop" class="btn btn-outline">Add Crop</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose SmartFarm Pro?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Smart Analytics</h3>
+                <p>Get detailed insights about your crops and farm performance</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌱</div>
+                <h3>Crop Management</h3>
+                <p>Easily track and manage all your crops in one place</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌤️</div>
+                <h3>Weather Integration</h3>
+                <p>Real-time weather data for better planning</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div>Happy Farmers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">2500+</div>
+                <div>Acres Managed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">150+</div>
+                <div>Crop Varieties</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">99%</div>
+                <div>Success Rate</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Blogs -->
+<section class="latest-blogs">
+    <div class="container">
+        <h2 class="section-title">Latest from Our Blog</h2>
+        <div class="blogs-grid">
+            {% for blog in blogs %}
+            <div class="blog-card">
+                <div class="blog-category">{{ blog.category }}</div>
+                <h3 class="blog-title">{{ blog.title }}</h3>
+                <p>{{ blog.content[:100] }}...</p>
+                <div class="blog-meta">
+                    <span>👤 {{ blog.author }}</span>
+                    <span>📅 {{ blog.created_at[:10] }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="text-align: center;">
+            <a href="/blogs" class="btn" style="background: #4caf50; color: white;">View All Blogs</a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <h2>Ready to Transform Your Farming?</h2>
+        <p>Join thousands of farmers using SmartFarm Pro</p>
+        {% if not session.user_id %}
+            <a href="/register" class="btn" style="background: white; color: #4caf50;">Start Free Trial</a>
+        {% else %}
+            <a href="/add_crop" class="btn" style="background: white; color: #4caf50;">Add Your First Crop</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

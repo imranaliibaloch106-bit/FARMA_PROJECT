@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - SmartFarm Pro{% endblock %}
+
+{% block content %}
+<style>
+    .about-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .about-hero {
+        background: linear-gradient(135deg, #4caf50, #2d4a2d);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .about-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .mission-vision {
+        margin-bottom: 3rem;
+    }
+    
+    .mv-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .mv-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+    }
+    
+    .mv-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
+    }
+    
+    .mv-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #4caf50;
+    }
+    
+    .mv-card h3 {
+        color: #2d4a2d;
+        margin-bottom: 1rem;
+    }
+    
+    .our-story {
+        background: white;
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+        margin-bottom: 3rem;
+    }
+    
+    .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+    }
+    
+    .story-content h2 {
+        color: #2d4a2d;
+        margin-bottom: 1.5rem;
+    }
+    
+    .story-content p {
+        margin-bottom: 1.5rem;
+        line-height: 1.8;
+        color: #555;
+    }
+    
+    .story-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .story-stat {
+        text-align: center;
+        padding: 1rem;
+        background: #f8fff8;
+        border-radius: 10px;
+        border: 2px solid #e8f5e8;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #4caf50;
+        display: block;
+    }
+    
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .story-image {
+        text-align: center;
+    }
+    
+    .story-image img {
+        max-width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .team-section {
+        margin-bottom: 3rem;
+    }
+    
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .team-member {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 2px solid #e8f5e8;
+        transition: all 0.3s ease;
+    }
+    
+    .team-member:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
+    }
+    
+    .member-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: #e8f5e8;
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #4caf50;
+    }
+    
+    .team-member h3 {
+        color: #2d4a2d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .member-role {
+        color: #4caf50;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .member-bio {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .technology {
+        background: white;
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+    }
+    
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .tech-item {
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+    
+    .tech-item i {
+        font-size: 3rem;
+        color: #4caf50;
+        margin-bottom: 1rem;
+    }
+    
+    .tech-item h4 {
+        color: #2d4a2d;
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .story-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .story-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="about-container">
+    <!-- About Hero -->
+    <section class="about-hero">
+        <h1>About SmartFarm</h1>
+        <p style="font-size: 1.2rem;">Transforming Agriculture Through Innovation and Technology</p>
+    </section>
+
+    <!-- Mission Vision -->
+    <section class="mission-vision">
+        <div class="mv-grid">
+            <div class="mv-card">
+                <div class="mv-icon">🎯</div>
+                <h3>Our Mission</h3>
+                <p>To empower farmers with cutting-edge technology that simplifies farm management, increases productivity, and promotes sustainable agricultural practices.</p>
+            </div>
+            
+            <div class="mv-card">
+                <div class="mv-icon">👁️</div>
+                <h3>Our Vision</h3>
+                <p>To create a world where every farmer has access to smart farming tools that ensure food security and economic prosperity for agricultural communities.</p>
+            </div>
+            
+            <div class="mv-card">
+                <div class="mv-icon">💚</div>
+                <h3>Our Values</h3>
+                <p>Innovation, Sustainability, Empowerment, Community, and Excellence in everything we do for the farming community.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Story Section -->
+    <section class="our-story">
+        <div class="story-grid">
+            <div class="story-content">
+                <h2>Our Story</h2>
+                <p>Founded in 2025, SmartFarm Pro emerged from a simple observation: farmers were struggling with outdated methods while technology was advancing rapidly in other sectors.</p>
+                <p>Our team of agricultural experts, software developers, and data scientists came together to bridge this gap. We've helped over 500 farmers manage more than 2,500 acres of land efficiently.</p>
+                <div class="story-stats">
+                    <div class="story-stat">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Farmers Empowered</span>
+                    </div>
+                    <div class="story-stat">
+                        <span class="stat-number">2500+</span>
+                        <span class="stat-label">Acres Managed</span>
+                    </div>
+                    <div class="story-stat">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">Success Rate</span>
+                    </div>
+                </div>
+            </div>
+            <div class="story-image">
+                <div style="background: #e8f5e8; padding: 3rem; border-radius: 15px; color: #4caf50; font-size: 4rem;">
+                    🌾
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section">
+        <h2 style="text-align: center; color: #2d4a2d; margin-bottom: 2rem;">Meet Our Team</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <div class="member-image">👨‍💼</div>
+                <h3>Ishfaque</h3>
+                <p class="member-role">Chief Agricultural Officer</p>
+                <p class="member-bio">20+ years of experience in sustainable farming practices and agricultural innovation.</p>
+            </div>
+            
+            <div class="team-member">
+                <div class="member-image">👩‍💻</div>
+                <h3>Sana Khan</h3>
+                <p class="member-role">Head of Technology</p>
+                <p class="member-bio">AI and machine learning expert focused on agricultural applications and data analytics.</p>
+            </div>
+            
+            <div class="team-member">
+                <div class="member-image">👨‍🌾</div>
+                <h3>Asad Ali</h3>
+                <p class="member-role">Farm Operations Director</p>
+                <p class="member-bio">Specialized in crop management, yield optimization, and sustainable farming practices.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section class="technology">
+        <h2 style="text-align: center; color: #2d4a2d; margin-bottom: 2rem;">Our Technology Stack</h2>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div>☁️</div>
+                <h4>Cloud Computing</h4>
+                <p>Secure and scalable cloud infrastructure for data storage and processing</p>
+            </div>
+            <div class="tech-item">
+                <div>🤖</div>
+                <h4>AI & Machine Learning</h4>
+                <p>Predictive analytics for crop yield and disease detection</p>
+            </div>
+            <div class="tech-item">
+                <div>📱</div>
+                <h4>Mobile First</h4>
+                <p>Responsive design that works perfectly on all devices</p>
+            </div>
+            <div class="tech-item">
+                <div>📊</div>
+                <h4>Data Analytics</h4>
+                <p>Comprehensive reporting and insights for better decision making</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

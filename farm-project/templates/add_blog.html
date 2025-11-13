@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Add Blog - SmartFarm Pro{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .form-header h1 {
+        color: #2d4a2d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .blog-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+        border: 2px solid #e8f5e8;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #2d4a2d;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e8f5e8;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        background: #f8fff8;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #4caf50;
+        background: white;
+    }
+    
+    select.form-control {
+        cursor: pointer;
+    }
+    
+    textarea.form-control {
+        resize: vertical;
+        min-height: 200px;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        padding-top: 2rem;
+        border-top: 2px solid #e8f5e8;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: #4caf50;
+        border: 2px solid #4caf50;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h1>📝 Add Blog Post</h1>
+        <p>Share your farming insights and experiences with the community</p>
+    </div>
+
+    <form method="POST" class="blog-form">
+        <div class="form-group">
+            <label for="title">Blog Title *</label>
+            <input type="text" id="title" name="title" class="form-control" required 
+                   placeholder="Enter an engaging title for your blog post">
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category *</label>
+            <select id="category" name="category" class="form-control" required>
+                <option value="">Select Category</option>
+                <option value="Farming Tips">Farming Tips</option>
+                <option value="Technology">Technology</option>
+                <option value="Sustainability">Sustainability</option>
+                <option value="Market News">Market News</option>
+                <option value="Success Stories">Success Stories</option>
+                <option value="Crop Management">Crop Management</option>
+                <option value="Weather Insights">Weather Insights</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="content">Blog Content *</label>
+            <textarea id="content" name="content" class="form-control" required 
+                      placeholder="Write your blog content here..."></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                📤 Publish Blog
+            </button>
+            <a href="/admin" class="btn btn-outline">
+                ❌ Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

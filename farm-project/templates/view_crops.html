@@ -1,0 +1,665 @@
+{% extends "base.html" %}
+
+{% block title %}View Crops - SmartFarm Pro{% endblock %}
+
+{% block content %}
+<style>
+    .page-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+        color: #2d4a2d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .summary-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        border: 2px solid #e8f5e8;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .summary-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .summary-icon.total { background: #4caf50; }
+    .summary-icon.area { background: #45a049; }
+    .summary-icon.yield { background: #388e3c; }
+    .summary-icon.revenue { background: #2d4a2d; }
+    
+    .summary-info h3 {
+        color: #2d4a2d;
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+    }
+    
+    .actions-bar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 2px solid #e8f5e8;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .actions-left, .actions-right {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: #4caf50;
+        border: 2px solid #4caf50;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .search-box {
+        position: relative;
+    }
+    
+    .search-box input {
+        padding: 10px 35px 10px 10px;
+        border: 2px solid #e8f5e8;
+        border-radius: 8px;
+        width: 250px;
+    }
+    
+    .search-box i {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4caf50;
+    }
+    
+    .filter-select {
+        padding: 10px;
+        border: 2px solid #e8f5e8;
+        border-radius: 8px;
+        background: white;
+        color: #2d4a2d;
+    }
+    
+    .table-container {
+        background: white;
+        border-radius: 10px;
+        border: 2px solid #e8f5e8;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .data-table th {
+        background: #4caf50;
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+    
+    .data-table td {
+        padding: 1rem;
+        border-bottom: 2px solid #e8f5e8;
+    }
+    
+    .data-table tr:hover {
+        background: #f8fff8;
+    }
+    
+    .badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .badge-type-cereal { background: #e8f5e8; color: #2d4a2d; }
+    .badge-type-vegetable { background: #d4edda; color: #155724; }
+    .badge-type-fruit { background: #ffeaa7; color: #856404; }
+    
+    .season-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .season-spring { background: #d4edda; color: #155724; }
+    .season-summer { background: #ffeaa7; color: #856404; }
+    .season-monsoon { background: #cce7ff; color: #004085; }
+    
+    .status-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-planted { background: #e8f5e8; color: #2d4a2d; }
+    .status-growing { background: #d4edda; color: #155724; }
+    .status-harvested { background: #ffeaa7; color: #856404; }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-action {
+        padding: 0.5rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-edit {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .btn-delete {
+        background: #f44336;
+        color: white;
+    }
+    
+    .btn-info {
+        background: #2196f3;
+        color: white;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #4caf50;
+    }
+    
+    .export-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 2px solid #e8f5e8;
+        text-align: center;
+    }
+    
+    .export-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+    }
+
+    /* Modal Styles */
+    .crop-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        border: 3px solid #4caf50;
+        position: relative;
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e8f5e8;
+    }
+    
+    .modal-header h2 {
+        color: #2d4a2d;
+        margin: 0;
+    }
+    
+    .close-modal {
+        background: #f44336;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    
+    .close-modal:hover {
+        background: #d32f2f;
+    }
+    
+    .crop-details-grid {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e8f5e8;
+    }
+    
+    .detail-label {
+        font-weight: bold;
+        color: #2d4a2d;
+    }
+    
+    .detail-value {
+        color: #555;
+    }
+</style>
+
+<div class="page-container">
+    <div class="page-header">
+        <h1>👀 View All Crops</h1>
+        <p>Manage and view all your farm crops in one place</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+        <div class="summary-card">
+            <div class="summary-icon total">🌱</div>
+            <div class="summary-info">
+                <h3>{{ crops|length }}</h3>
+                <p>Total Crops</p>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon area">📍</div>
+            <div class="summary-info">
+                <h3>{{ "%.1f"|format(crops|sum(attribute='area')) }}</h3>
+                <p>Total Area (acres)</p>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon yield">⚖️</div>
+            <div class="summary-info">
+                <h3>{{ "%.0f"|format(crops|sum(attribute='expected_yield')) }}</h3>
+                <p>Total Yield (kg)</p>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon revenue">💰</div>
+            <div class="summary-info">
+                <h3>
+                    {% set total_value = 0 %}
+                    {% for crop in crops %}
+                        {% set total_value = total_value + (crop.expected_yield|float * crop.price|float) %}
+                    {% endfor %}
+                    ${{ "%.0f"|format(total_value) }}
+                </h3>
+                <p>Estimated Value</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions Bar -->
+    <div class="actions-bar">
+        <div class="actions-left">
+            <a href="/add_crop" class="btn btn-primary">➕ Add New Crop</a>
+            <a href="/dashboard" class="btn btn-outline">📊 Back to Dashboard</a>
+        </div>
+        <div class="actions-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search crops...">
+                <span>🔍</span>
+            </div>
+            <select id="filterSelect" class="filter-select">
+                <option value="all">All Crops</option>
+                <option value="Cereal">Cereals</option>
+                <option value="Vegetable">Vegetables</option>
+                <option value="Fruit">Fruits</option>
+                <option value="Planted">Planted</option>
+                <option value="Harvested">Harvested</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Crops Table -->
+    <div class="table-container">
+        {% if crops %}
+        <table class="data-table" id="cropsTable">
+            <thead>
+                <tr>
+                    <th>Crop Name</th>
+                    <th>Type</th>
+                    <th>Area</th>
+                    <th>Season</th>
+                    <th>Yield</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Farmer</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for crop in crops %}
+                <tr>
+                    <td>
+                        <strong>{{ crop.crop_name }}</strong>
+                        {% if crop.description %}
+                        <br><small style="color: #666;">{{ crop.description[:50] }}{% if crop.description|length > 50 %}...{% endif %}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-type-{{ crop.crop_type|lower }}">
+                            {{ crop.crop_type }}
+                        </span>
+                    </td>
+                    <td>{{ crop.area }} acres</td>
+                    <td>
+                        <span class="season-badge season-{{ crop.season|lower }}">
+                            {{ crop.season }}
+                        </span>
+                    </td>
+                    <td><strong>{{ crop.expected_yield }} kg</strong></td>
+                    <td><strong>${{ crop.price }}</strong></td>
+                    <td>
+                        <span class="status-badge status-{{ crop.status|lower }}">
+                            {{ crop.status }}
+                        </span>
+                    </td>
+                    <td>{{ crop.farmer }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="/edit_crop/{{ crop.id }}" class="btn-action btn-edit" title="Edit">✏️</a>
+                            <a href="/delete_crop/{{ crop.id }}" class="btn-action btn-delete" 
+                               onclick="return confirm('Delete {{ crop.crop_name }}?')" title="Delete">🗑️</a>
+                           <button class="btn-action btn-info" onclick="alert('Crop ID: {{ crop.id }}')" title="Info">ℹ️</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🌱</div>
+            <h3>No Crops Found</h3>
+            <p>You haven't added any crops yet. Start by adding your first crop!</p>
+            <a href="/add_crop" class="btn btn-primary" style="margin-top: 1rem;">➕ Add Your First Crop</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Export Options -->
+    {% if crops %}
+    <div class="export-section">
+        <h3>📥 Export Data</h3>
+        <div class="export-buttons">
+            <button class="btn btn-outline" onclick="exportToCSV()">📊 Export to CSV</button>
+            <button class="btn btn-outline" onclick="window.print()">🖨️ Print Report</button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Crop Details Modal -->
+<div id="cropModal" class="crop-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>🌱 Crop Details</h2>
+            <button class="close-modal" onclick="closeCropModal()">✕ Close</button>
+        </div>
+        <div class="modal-body" id="cropModalBody">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
+                <p>Loading crop details...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== CROP DETAILS FUNCTIONS =====
+function showCropDetails(cropId) {
+    console.log('Showing details for crop ID:', cropId);
+    
+    // Show the modal
+    const modal = document.getElementById('cropModal');
+    const modalBody = document.getElementById('cropModalBody');
+    
+    modal.style.display = 'flex';
+    
+    // Show loading state
+    modalBody.innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
+            <p>Loading crop details...</p>
+        </div>
+    `;
+    
+    // Simulate API call (in real app, you'd fetch from server)
+    setTimeout(() => {
+        // Get crop data (this would come from your database in real app)
+        const cropData = {
+            id: cropId,
+            name: 'Crop #' + cropId,
+            type: 'Cereal',
+            area: '5.2 acres',
+            season: 'Spring',
+            yield: '1000 kg',
+            price: '$2.50/kg',
+            status: 'Growing',
+            planted: '2024-03-15',
+            harvest: '2024-07-20',
+            farmer: 'Current User',
+            description: 'This crop is growing well with proper irrigation and fertilization.'
+        };
+        
+        // Update modal content with crop details
+        modalBody.innerHTML = `
+            <div class="crop-details-grid">
+                <div class="detail-row">
+                    <span class="detail-label">Crop ID:</span>
+                    <span class="detail-value">${cropData.id}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Crop Name:</span>
+                    <span class="detail-value">${cropData.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Type:</span>
+                    <span class="detail-value">${cropData.type}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Area:</span>
+                    <span class="detail-value">${cropData.area}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Season:</span>
+                    <span class="detail-value">${cropData.season}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Expected Yield:</span>
+                    <span class="detail-value">${cropData.yield}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Price:</span>
+                    <span class="detail-value">${cropData.price}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value" style="background: #e8f5e8; color: #2d4a2d; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem;">
+                        ${cropData.status}
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Planted:</span>
+                    <span class="detail-value">${cropData.planted}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Expected Harvest:</span>
+                    <span class="detail-value">${cropData.harvest}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Farmer:</span>
+                    <span class="detail-value">${cropData.farmer}</span>
+                </div>
+                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 2px solid #e8f5e8;">
+                    <strong style="color: #2d4a2d;">Additional Notes:</strong>
+                    <p style="margin-top: 0.5rem; color: #666; line-height: 1.6;">
+                        ${cropData.description}
+                    </p>
+                </div>
+            </div>
+        `;
+    }, 1000);
+}
+
+function closeCropModal() {
+    const modal = document.getElementById('cropModal');
+    modal.style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.getElementById('cropModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCropModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCropModal();
+    }
+});
+
+// ===== OTHER FUNCTIONS =====
+function exportToCSV() {
+    alert('📊 CSV export functionality would be implemented here!\nThis would download all crop data as a CSV file.');
+}
+
+// Search and filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const filterSelect = document.getElementById('filterSelect');
+    const table = document.getElementById('cropsTable');
+    
+    if (table) {
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filterValue = filterSelect.value;
+            
+            for (let row of rows) {
+                const cells = row.getElementsByTagName('td');
+                const cropName = cells[0].textContent.toLowerCase();
+                const cropType = cells[1].textContent;
+                const cropStatus = cells[6].textContent;
+                
+                const matchesSearch = cropName.includes(searchTerm);
+                const matchesFilter = filterValue === 'all' || 
+                                    cropType === filterValue || 
+                                    cropStatus === filterValue;
+                
+                row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
+            }
+        }
+        
+        searchInput.addEventListener('input', filterTable);
+        filterSelect.addEventListener('change', filterTable);
+    }
+    
+    console.log('✅ View Crops page JavaScript loaded successfully!');
+});
+</script>
+{% endblock %}

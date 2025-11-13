@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Crop - SmartFarm Pro{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .form-header h1 {
+        color: #2d4a2d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .crop-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+        border: 2px solid #e8f5e8;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-section {
+        background: #f8fff8;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 2px solid #e8f5e8;
+    }
+    
+    .form-section h3 {
+        color: #2d4a2d;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #2d4a2d;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e8f5e8;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        background: white;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #4caf50;
+    }
+    
+    select.form-control {
+        cursor: pointer;
+    }
+    
+    textarea.form-control {
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    .input-with-symbol {
+        position: relative;
+    }
+    
+    .input-symbol {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4caf50;
+        font-weight: bold;
+    }
+    
+    .input-with-symbol .form-control {
+        padding-left: 25px;
+    }
+    
+    .yield-preview {
+        background: #e8f5e8;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+    
+    .yield-preview h4 {
+        color: #2d4a2d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .revenue-calc {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        padding-top: 2rem;
+        border-top: 2px solid #e8f5e8;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: #4caf50;
+        border: 2px solid #4caf50;
+    }
+    
+    .btn-danger {
+        background: #f44336;
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .crop-history {
+        background: white;
+        margin-top: 2rem;
+        padding: 2rem;
+        border-radius: 15px;
+        border: 2px solid #e8f5e8;
+    }
+    
+    .history-timeline {
+        margin-top: 1rem;
+    }
+    
+    .timeline-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e8f5e8;
+    }
+    
+    .timeline-date {
+        background: #4caf50;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: bold;
+        min-width: 100px;
+        text-align: center;
+    }
+    
+    .timeline-content {
+        flex: 1;
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h1>✏️ Edit Crop</h1>
+        <p>Update crop information for <strong>{{ crop.crop_name }}</strong></p>
+    </div>
+
+    <form method="POST" class="crop-form">
+        <div class="form-grid">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3>ℹ️ Basic Information</h3>
+                
+                <div class="form-group">
+                    <label for="crop_name">Crop Name *</label>
+                    <input type="text" id="crop_name" name="crop_name" class="form-control" 
+                           value="{{ crop.crop_name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="crop_type">Crop Type *</label>
+                    <select id="crop_type" name="crop_type" class="form-control" required>
+                        <option value="Cereal" {% if crop.crop_type == 'Cereal' %}selected{% endif %}>Cereal</option>
+                        <option value="Vegetable" {% if crop.crop_type == 'Vegetable' %}selected{% endif %}>Vegetable</option>
+                        <option value="Fruit" {% if crop.crop_type == 'Fruit' %}selected{% endif %}>Fruit</option>
+                        <option value="Pulse" {% if crop.crop_type == 'Pulse' %}selected{% endif %}>Pulse</option>
+                        <option value="Oilseed" {% if crop.crop_type == 'Oilseed' %}selected{% endif %}>Oilseed</option>
+                        <option value="Commercial" {% if crop.crop_type == 'Commercial' %}selected{% endif %}>Commercial</option>
+                        <option value="Other" {% if crop.crop_type == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" class="form-control">{{ crop.description }}</textarea>
+                </div>
+            </div>
+
+            <!-- Planting Details -->
+            <div class="form-section">
+                <h3>🌱 Planting Details</h3>
+                
+                <div class="form-group">
+                    <label for="area">Area (acres) *</label>
+                    <input type="number" id="area" name="area" class="form-control" 
+                           step="0.1" min="0.1" value="{{ crop.area }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="season">Season *</label>
+                    <select id="season" name="season" class="form-control" required>
+                        <option value="Spring" {% if crop.season == 'Spring' %}selected{% endif %}>Spring</option>
+                        <option value="Summer" {% if crop.season == 'Summer' %}selected{% endif %}>Summer</option>
+                        <option value="Monsoon" {% if crop.season == 'Monsoon' %}selected{% endif %}>Monsoon</option>
+                        <option value="Autumn" {% if crop.season == 'Autumn' %}selected{% endif %}>Autumn</option>
+                        <option value="Winter" {% if crop.season == 'Winter' %}selected{% endif %}>Winter</option>
+                        <option value="Year-round" {% if crop.season == 'Year-round' %}selected{% endif %}>Year-round</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Current Status</label>
+                    <select id="status" name="status" class="form-control">
+                        <option value="Planted" {% if crop.status == 'Planted' %}selected{% endif %}>Planted</option>
+                        <option value="Growing" {% if crop.status == 'Growing' %}selected{% endif %}>Growing</option>
+                        <option value="Flowering" {% if crop.status == 'Flowering' %}selected{% endif %}>Flowering</option>
+                        <option value="Harvesting" {% if crop.status == 'Harvesting' %}selected{% endif %}>Harvesting</option>
+                        <option value="Harvested" {% if crop.status == 'Harvested' %}selected{% endif %}>Harvested</option>
+                        <option value="Dormant" {% if crop.status == 'Dormant' %}selected{% endif %}>Dormant</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Yield & Economic Details -->
+            <div class="form-section">
+                <h3>💰 Yield & Economics</h3>
+                
+                <div class="form-group">
+                    <label for="expected_yield">Expected Yield (kg) *</label>
+                    <input type="number" id="expected_yield" name="expected_yield" class="form-control" 
+                           step="0.1" min="0" value="{{ crop.expected_yield }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Expected Price (per kg) *</label>
+                    <div class="input-with-symbol">
+                        <span class="input-symbol">$</span>
+                        <input type="number" id="price" name="price" class="form-control" 
+                               step="0.01" min="0" value="{{ crop.price }}" required>
+                    </div>
+                </div>
+
+                <div class="yield-preview">
+                    <h4>Estimated Revenue</h4>
+                    <div class="revenue-calc">
+                        <span id="yieldDisplay">{{ crop.expected_yield }}</span> kg × 
+                        $<span id="priceDisplay">{{ crop.price }}</span> = 
+                        <strong>$<span id="revenueDisplay">
+                            {{ (crop.expected_yield|float * crop.price|float)|round(2) }}
+                        </span></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                💾 Update Crop
+            </button>
+            <a href="/view_crops" class="btn btn-outline">
+                ❌ Cancel
+            </a>
+            <a href="/delete_crop/{{ crop.id }}" class="btn btn-danger"
+               onclick="return confirm('Are you sure you want to delete {{ crop.crop_name }}?')">
+                🗑️ Delete Crop
+            </a>
+        </div>
+    </form>
+
+    <!-- Crop History -->
+    <div class="crop-history">
+        <h3>📅 Crop History</h3>
+        <div class="history-timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">Created</div>
+                <div class="timeline-content">
+                    <strong>Crop Added to System</strong>
+                    <p>{{ crop.created_at[:10] }}</p>
+                </div>
+            </div>
+            {% if crop.updated_at and crop.updated_at != crop.created_at %}
+            <div class="timeline-item">
+                <div class="timeline-date">Updated</div>
+                <div class="timeline-content">
+                    <strong>Last Modified</strong>
+                    <p>{{ crop.updated_at[:10] }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const yieldInput = document.getElementById('expected_yield');
+    const priceInput = document.getElementById('price');
+    const yieldDisplay = document.getElementById('yieldDisplay');
+    const priceDisplay = document.getElementById('priceDisplay');
+    const revenueDisplay = document.getElementById('revenueDisplay');
+
+    function calculateRevenue() {
+        const yield = parseFloat(yieldInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        const revenue = yield * price;
+        
+        yieldDisplay.textContent = yield.toLocaleString();
+        priceDisplay.textContent = price.toLocaleString();
+        revenueDisplay.textContent = revenue.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    yieldInput.addEventListener('input', calculateRevenue);
+    priceInput.addEventListener('input', calculateRevenue);
+});
+</script>
+{% endblock %}

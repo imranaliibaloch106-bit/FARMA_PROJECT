@@ -1,0 +1,80 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "username": "admin",
+            "password": "admin123",
+            "email": "admin@farm.com",
+            "role": "admin",
+            "created_at": "2025-11-12",
+            "phone": "+1234567890"
+        },
+        {
+            "id": 2,
+            "username": "ishfaque",
+            "password": "khatti@786",
+            "email": "ishfaque126@gmail.com",
+            "phone": "03163506800",
+            "role": "user",
+            "created_at": "2025-11-12T12:49:39.205540"
+        }
+    ],
+    "crops": [
+        {
+            "id": 1,
+            "crop_name": "rice",
+            "crop_type": "Commercial",
+            "area": 45.0,
+            "season": "Spring",
+            "expected_yield": 1000.0,
+            "price": 124.0,
+            "description": "fgsd",
+            "farmer": "admin",
+            "status": "Planted",
+            "created_at": "2025-11-12T13:19:38.810013",
+            "updated_at": "2025-11-12T13:19:56.223108"
+        }
+    ],
+    "blogs": [
+        {
+            "id": 2,
+            "title": "Smart Water Saving Method",
+            "content": "Save water with drip irrigation. Water plants in morning. Use mulch to keep soil wet. Collect rain water. Check soil before watering. Fix leaks quickly. These tips save water and money.",
+            "category": "Farming Tips",
+            "author": "admin",
+            "created_at": "2025-11-12T14:22:15.364815"
+        },
+        {
+            "id": 3,
+            "title": "Organic Farming Benefits",
+            "content": "Organic farming uses natural fertilizers. No chemicals in food. Soil stays healthy. Food tastes better. Good for environment. Helps bees and birds. People prefer organic food.",
+            "category": "Success Stories",
+            "author": "admin",
+            "created_at": "2025-11-12T14:22:59.917899"
+        },
+        {
+            "id": 4,
+            "title": "New Farming Technology",
+            "content": "Mobile apps help farmers. Weather apps give alerts. Drones spray fields. Sensors check soil. Online markets for selling. Digital payments easy. Technology saves time and work.",
+            "category": "Technology",
+            "author": "admin",
+            "created_at": "2025-11-12T14:23:27.112839"
+        },
+        {
+            "id": 5,
+            "title": "Better Crop Planning",
+            "content": "Plan crops by season. Choose right seeds. Test soil first. Space plants properly. Rotate crops each year. Use organic compost. Monitor growth regularly. Good planning gives more crops.",
+            "category": "Crop Management",
+            "author": "admin",
+            "created_at": "2025-11-12T14:24:00.006004"
+        },
+        {
+            "id": 6,
+            "title": "Soil Health Tips",
+            "content": "Healthy soil grows good crops. Test soil every year. Add organic matter. Don't use too much chemicals. Rotate crops regularly. Keep soil covered. Good soil gives more yield.",
+            "category": "Sustainability",
+            "author": "admin",
+            "created_at": "2025-11-12T14:24:33.745443"
+        }
+    ]
+}
